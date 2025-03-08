@@ -1,8 +1,8 @@
 # go-whatsapp
-A collection of useful functions to connect to and send messages to Meta over their WhatsApp Business Platform.
+A collection of useful functions to send messages and listen for events on Meta's WhatsApp Business platform.
 
 ## Documentation
-1. This is at alpha stage. Lots of bugs, untested code and an evolving list of features that are still in development.
+1. This is still being developed.
 
 ## Installation
 ```
