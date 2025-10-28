@@ -9,13 +9,20 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/mwprogrammer/chat/internal/models"
 	"github.com/mwprogrammer/chat/internal/utilities"
 )
 
-func Get[T any](url string) (models.HttpResponse[T], error) {
+type HttpResponse[T any] struct {
+	Url          string
+	Request      string
+	Response     *string
+	ResponseCode *int
+	Data         *T
+}
 
-	response := models.HttpResponse[T]{}
+func Get[T any](url string) (HttpResponse[T], error) {
+
+	response := HttpResponse[T]{}
 
 	response.Url = url
 	response.Request = url
@@ -65,9 +72,9 @@ func Get[T any](url string) (models.HttpResponse[T], error) {
 
 }
 
-func Post[T any, K any](url string, data K, headers map[string]string, timeout int) (models.HttpResponse[T], error) {
+func Post[T any, K any](url string, data K, headers map[string]string, timeout int) (HttpResponse[T], error) {
 
-	response := models.HttpResponse[T]{}
+	response := HttpResponse[T]{}
 
 	response.Url = url
 	response.Request = url
