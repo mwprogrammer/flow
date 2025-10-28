@@ -1,6 +1,6 @@
 package models
 
-type CloudApiPayload struct {
+type Payload struct {
 	Product            string              `json:"messaging_product"`
 	MessageId          string              `json:"message_id"`
 	Status             string              `json:"status"`
