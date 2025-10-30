@@ -72,9 +72,9 @@ func Get[T any](url string) (HttpResponse[T], error) {
 
 }
 
-func Post[T any, K any](url string, data K, headers map[string]string, timeout int) (HttpResponse[T], error) {
+func Post[T any, K any](url string, data T, headers map[string]string, timeout int) (HttpResponse[K], error) {
 
-	response := HttpResponse[T]{}
+	response := HttpResponse[K]{}
 
 	response.Url = url
 	response.Request = url
@@ -132,7 +132,7 @@ func Post[T any, K any](url string, data K, headers map[string]string, timeout i
 
 	}
 
-	var result T
+	var result K
 
 	if utilities.IsTypeString(result) {
 		return response, nil
