@@ -1,13 +1,13 @@
-package whatsapp
+package client
 
 import (
 	"fmt"
 
-	"github.com/mwprogrammer/chat/internal/http"
-	"github.com/mwprogrammer/chat/whatsapp/models"
+	"github.com/mwprogrammer/flow/internal/http"
+	"github.com/mwprogrammer/flow/models"
 )
 
-func PostRequest(settings models.Settings, payload models.Payload, endpoint string) error {
+func PostMessage(settings models.Settings, payload models.Payload, endpoint string) error {
 
 	headers := map[string]string{}
 

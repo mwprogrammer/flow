@@ -1,3 +1,3 @@
-module github.com/mwprogrammer/chat
+module github.com/mwprogrammer/flow
 
 go 1.24.5

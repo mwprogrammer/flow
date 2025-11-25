@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/mwprogrammer/chat/internal/utilities"
+	"github.com/mwprogrammer/flow/internal/utilities"
 )
 
 type HttpResponse[T any] struct {

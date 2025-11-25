@@ -2,7 +2,7 @@ package models
 
 type Payload struct {
 	Product            string              `json:"messaging_product"`
-	MessageId          string              `json:"message_id"`
+	MessageId          int                 `json:"message_id"`
 	Status             string              `json:"status"`
 	ReceipientType     string              `json:"receipient_type"`
 	To                 string              `json:"to"`
