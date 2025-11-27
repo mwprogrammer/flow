@@ -1,4 +1,4 @@
-package models
+package types
 
 type Settings struct {
 	Id          string

@@ -1,27 +1,30 @@
 package flow
 
 import (
-	"github.com/mwprogrammer/flow/client"
-	"github.com/mwprogrammer/flow/models"
+	"github.com/mwprogrammer/flow/internal/client"
+	models "github.com/mwprogrammer/flow/internal/types"
 )
 
-var settings models.Settings
+type FlowSettings struct {
+	Id      string
+	Version string
+	Token   string
+	Sender  string
+}
 
-func Setup(
+func New(settings FlowSettings) *Flow {
 
-	business_account_id string,
-	api_version string,
-	access_token string) {
-
-	settings = models.Settings{}
-
-	settings.Id = business_account_id
-	settings.Version = api_version
-	settings.AccessToken = access_token
+	return &Flow{
+		settings: settings,
+	}
 
 }
 
-func BlueTickMessage(messageId int) error {
+type Flow struct {
+	settings FlowSettings
+}
+
+func (f *Flow) BlueTickMessage(messageId int) error {
 
 	payload := models.Payload{}
 
@@ -29,7 +32,11 @@ func BlueTickMessage(messageId int) error {
 	payload.Status = "read"
 	payload.MessageId = messageId
 
-	err := client.PostMessage(settings, payload, "messages")
+	err := client.PostMessage(
+		f.settings.Version,
+		f.settings.Token,
+		f.settings.Sender, payload,
+		"messages")
 
 	if err != nil {
 		return err
@@ -39,7 +46,7 @@ func BlueTickMessage(messageId int) error {
 
 }
 
-func ReplyWithText(phone string, message string) error {
+func (f *Flow) ReplyWithText(phone string, message string) error {
 
 	payload := models.Payload{}
 
@@ -49,73 +56,11 @@ func ReplyWithText(phone string, message string) error {
 	payload.Type = "text"
 	payload.TextMessage.Body = message
 
-	err := client.PostMessage(settings, payload, "messages")
-
-	if err != nil {
-		return err
-	}
-
-	return nil
-
-}
-
-func ReplyWithButtons(
-	phone string,
-	message string,
-	buttons []models.ButtonMessage) error {
-
-	payload := models.Payload{}
-
-	payload.Product = "whatsapp"
-	payload.ReceipientType = "individual"
-	payload.To = phone
-	payload.Type = "interactive"
-
-	interactive_message := models.InteractiveMessage{}
-
-	interactive_message.Type = "button"
-	interactive_message.Body.Text = message
-	interactive_message.Action.Buttons = buttons
-
-	payload.InteractiveMessage = &interactive_message
-
-	err := client.PostMessage(settings, payload, "messages")
-
-	if err != nil {
-		return err
-	}
-
-	return nil
-
-}
-
-func ReplyWithList(
-	phone string,
-	header string,
-	body string,
-	footer string,
-	action string,
-	sections []models.SectionMessage) error {
-
-	payload := models.Payload{}
-
-	payload.Product = "whatsapp"
-	payload.ReceipientType = "individual"
-	payload.To = phone
-	payload.Type = "interactive"
-
-	interactive_message := models.InteractiveMessage{}
-
-	interactive_message.Type = "list"
-	interactive_message.Header.Text = header
-	interactive_message.Body.Text = body
-	interactive_message.Footer.Text = footer
-	interactive_message.Action.Button = action
-	interactive_message.Action.Sections = sections
-
-	payload.InteractiveMessage = &interactive_message
-
-	err := client.PostMessage(settings, payload, "messages")
+	err := client.PostMessage(
+		f.settings.Version,
+		f.settings.Token,
+		f.settings.Sender, payload,
+		"messages")
 
 	if err != nil {
 		return err

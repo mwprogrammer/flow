@@ -1,4 +1,4 @@
-package models
+package types
 
 type Message struct {
 	Id         string `json:"message_id"`

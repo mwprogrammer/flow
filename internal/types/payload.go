@@ -1,4 +1,4 @@
-package models
+package types
 
 type Payload struct {
 	Product            string              `json:"messaging_product"`
