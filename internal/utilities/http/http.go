@@ -128,7 +128,8 @@ func Post[T any, K any](url string, data T, headers map[string]string, timeout i
 	if content.StatusCode != http.StatusCreated && content.StatusCode != http.StatusOK {
 
 		error_bytes, _ := io.ReadAll(content.Body)
-		return response, fmt.Errorf("received unexpected status code %d. Response: %s", content.StatusCode, error_bytes)
+
+		return response, fmt.Errorf("received unexpected status code %d. Response: %s", content.StatusCode, string(error_bytes))
 
 	}
 

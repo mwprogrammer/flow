@@ -1,8 +1,20 @@
 package types
 
+type BasePayload struct {
+	Product        string `json:"messaging_product"`
+	ReceipientType string `json:"receipient_type"`
+	To             string `json:"to"`
+	Type           string `json:"type"`
+}
+
+type ReplyWithTextPayload struct {
+	BasePayload
+	TextMessage *TextMessage `json:"text"`
+}
+
 type Payload struct {
 	Product            string              `json:"messaging_product"`
-	MessageId          int                 `json:"message_id"`
+	MessageId          string              `json:"message_id"`
 	Status             string              `json:"status"`
 	ReceipientType     string              `json:"receipient_type"`
 	To                 string              `json:"to"`
@@ -18,7 +30,8 @@ type Payload struct {
 }
 
 type TextMessage struct {
-	Body string `json:"body"`
+	PreviewUrl bool   `json:"preview_url"`
+	Body       string `json:"body"`
 }
 
 type InteractiveMessage struct {
@@ -64,25 +77,25 @@ type SectionRow struct {
 }
 
 type ImageMessage struct {
-	Id      int    `json:"id"`
+	Id      string `json:"id"`
 	Caption string `json:"caption"`
 	Link    string `json:"link"`
 }
 
 type VideoMessage struct {
-	Id      int    `json:"id"`
+	Id      string `json:"id"`
 	Caption string `json:"caption"`
 	Link    string `json:"link"`
 }
 
 type AudioMessage struct {
-	Id      int    `json:"id"`
+	Id      string `json:"id"`
 	Caption string `json:"caption"`
 	Link    string `json:"link"`
 }
 
 type DocumentMessage struct {
-	Id   int    `json:"id"`
+	Id   string `json:"id"`
 	Name string `json:"filename"`
 	Link string `json:"link"`
 }
