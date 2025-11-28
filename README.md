@@ -33,10 +33,24 @@ flow_settings := flow.FlowSettings{
 
 Initialize a new Flow Object with the settings you created. You now have access to Flow methods which enable you to interact with users over the Whatsapp Business Platform.
 ```
-flow_app := flow.New(new_flow_settings)
+flow_app := flow.New(flow_settings)
 ```
 
 ### Flow Methods
+
+#### Mark message as read
+
+Mark a message as ready by specifying the **receipient phone** and **messageId**.
+```
+err := flow_app.MarkAsRead("26588293345", "XXXXXXXXXX")
+```
+
+#### Display Typing Indicator
+
+Display that the app is typing by specifying the **receipient phone** and **messageId**.
+```
+err := flow_app.DisplayTypingIndicator("26588293345", "XXXXXXXXXX")
+```
 
 #### Reply with a Text Message
 
@@ -44,6 +58,3 @@ Send text messages to users by specifying the **receipient phone number**, the *
 ```
 err := flow_app.ReplyWithText("26588293345", "Hello", false)
 ```
-
-
-

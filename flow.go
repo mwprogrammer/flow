@@ -2,7 +2,7 @@ package flow
 
 import (
 	"github.com/mwprogrammer/flow/internal/client"
-	models "github.com/mwprogrammer/flow/internal/payloads"
+	payloads "github.com/mwprogrammer/flow/internal/payloads"
 )
 
 type FlowSettings struct {
@@ -24,15 +24,67 @@ type Flow struct {
 	settings FlowSettings
 }
 
-func (f *Flow) ReplyWithText(phone string, message string, previewUrl bool) error {
+func (f *Flow) MarkAsRead(phone string, message_id string) error {
 
-	payload := models.ReplyWithTextPayload{}
+	payload := payloads.MarkAsReadPayload{}
 
 	payload.Product = "whatsapp"
 	payload.ReceipientType = "individual"
 	payload.To = phone
 	payload.Type = "text"
-	payload.TextMessage = &models.TextMessage{}
+	payload.MessageId = message_id
+	payload.Status = "read"
+
+	err := client.PostMessage(
+		f.settings.Version,
+		f.settings.Token,
+		f.settings.Sender, payload,
+		"messages")
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}
+
+func (f *Flow) DisplayTypingIndicator(phone string, message_id string) error {
+
+	payload := payloads.DisplayTypingPayload{}
+
+	payload.Product = "whatsapp"
+	payload.ReceipientType = "individual"
+	payload.To = phone
+	payload.Type = "text"
+	payload.MessageId = message_id
+	payload.Status = "read"
+	payload.Indicator = payloads.TypingIndicator{}
+	payload.Indicator.Type = "text"
+
+	err := client.PostMessage(
+		f.settings.Version,
+		f.settings.Token,
+		f.settings.Sender, payload,
+		"messages")
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}
+
+func (f *Flow) ReplyWithText(phone string, message string, previewUrl bool) error {
+
+	payload := payloads.ReplyWithTextPayload{}
+
+	payload.Product = "whatsapp"
+	payload.ReceipientType = "individual"
+	payload.To = phone
+	payload.Type = "text"
+	payload.TextMessage = &payloads.TextMessage{}
 	payload.TextMessage.PreviewUrl = previewUrl
 	payload.TextMessage.Body = message
 
