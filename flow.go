@@ -3,6 +3,7 @@ package flow
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 
 	"github.com/mwprogrammer/flow/internal/client"
 	payloads "github.com/mwprogrammer/flow/internal/payloads"
@@ -32,6 +33,10 @@ func (f *Flow) ParseMessage(response string) (*Message, error) {
 	var message Message
 
 	data, err := client.ReadMessage(response)
+
+	debug, _ := json.Marshal(data)
+
+	fmt.Println(string(debug))
 
 	if err != nil {
 		return nil, err
