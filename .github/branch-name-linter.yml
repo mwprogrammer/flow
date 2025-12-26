@@ -1,0 +1,16 @@
+name: "Branch Name Linter"
+
+on:
+  pull_request:
+    types: [opened, edited, synchronized]
+
+jobs:
+  check-branch-name:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate Branch Prefix
+        uses: deepakputhraya/action-branch-name@master
+        with:
+          regex: '^(feat|fix|refactor|chore|docs|perf|test|security)\/.*'
+          allowed_prefixes: 'feat,fix,refactor,chore,docs,perf,test,security'
+          ignore_branches: 'main,develop'

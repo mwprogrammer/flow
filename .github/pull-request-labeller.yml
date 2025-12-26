@@ -1,0 +1,33 @@
+name: "Pull Request Labeler"
+
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            const branchName = context.payload.pull_request.head.ref;
+            const labels = [];
+            
+            if (branchName.startsWith('feat/')) labels.push('enhancement');
+            if (branchName.startsWith('fix/')) labels.push('bug');
+            if (branchName.startsWith('docs/')) labels.push('documentation');
+            if (branchName.startsWith('chore/')) labels.push('internal');
+            if (branchName.startsWith('refactor/')) labels.push('refactor');
+
+            if (labels.length > 0) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                labels: labels
+              });
+            }
