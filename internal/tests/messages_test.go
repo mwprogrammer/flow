@@ -31,11 +31,16 @@ func TestParsingMessage(t *testing.T) {
 
 	message, err := new_flow.ParseMessage(sample_response)
 
-	debug, _ := json.Marshal(message)
+	debug, err := json.Marshal(message)
 
 	fmt.Println(string(debug))
 
 	if err != nil {
 		t.Errorf(`parsing message: %v`, err)
 	}
+
+	if err != nil {
+		t.Errorf(`parsing message: %v`, err)
+	}
+
 }
