@@ -104,15 +104,19 @@ func (f *Flow) ParseMessage(response string) (*Message, error) {
 
 	if receipient_messages[0].Type == "text" {
 
-		var text_message payloads.TextReceipientMessage
+		var text_messages []payloads.TextReceipientMessage
 
-		err = json.Unmarshal(messages_data, &text_message)
+		err = json.Unmarshal(messages_data, &text_messages)
+
+		fmt.Println(string(messages_data))
 
 		if err != nil {
+			fmt.Println(err.Error())
 			return nil, errors.New("could not retrieve messages property text data")
 		}
 
-		message.Content = text_message.Text.Body
+		message.Content = text_messages[0].Text.Body
+
 	}
 
 	return &message, nil
