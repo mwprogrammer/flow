@@ -1,6 +1,6 @@
 # Contributing Guide
 
-Thank you for contributing! To maintain a high-quality codebase and an automated audit trail for our Beta releases, we follow a specific workflow.
+Thank you for contributing! To maintain a high-quality codebase and an automated audit trail for our releases, we follow a specific workflow.
 
 ---
 
