@@ -1,5 +1,7 @@
-name-template: 'v$RESOLVED_VERSION'
-tag-template: 'v$RESOLVED_VERSION'
+target-commitish: main
+tag-template: 'v$NEXT_MINOR_VERSION'
+name-template: 'v$NEXT_MINOR_VERSION'
+prerelease: false
 
 categories:
   - title: '🚀 Features'
