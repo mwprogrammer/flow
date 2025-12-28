@@ -44,6 +44,39 @@ We use **Conventional Commits** for automated release notes:
 
 ---
 
+## 🏆 Release Notes
+Once merged, your contribution and GitHub profile will be automatically added to the next Release once published!
+
+## 🛠️ Local Development
+
+### Prerequisites
+- **Go:** 1.21+ ([Download](https://golang.org/dl/))
+- **golangci-lint:** Follow the installation for your OS below:
+
+#### Installing the Linter
+
+| OS | Command |
+| :--- | :--- |
+| **macOS** | `brew install golangci-lint` |
+| **Linux/WSL** | `curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.61.0` |
+| **Windows** | `go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest` |
+
+### Development Workflow
+
+1. **Fork and Clone** the repository.
+2. **Initialize dependencies:**
+```bash
+   go mod download
+```
+3. **After making code changes, run the Linter**
+```bash
+   golangci-lint run
+```   
+4. **Alternatively, you can auto-fix some style issues by running the following command**
+```bash
+   golangci-lint run --fix
+```
+
 ## 🛠 Go Style Guide
 
 To maintain consistency across the codebase, we adhere to the official Go standards.
@@ -66,7 +99,3 @@ We follow the official community recommendations:
 - Errors should be handled explicitly.
 - Use `fmt.Errorf` with the `%w` verb for error wrapping where appropriate.
 - **Example:** `if err != nil { return fmt.Errorf("parsing failed: %w", err) }`
-
-
-## 🏆 Release Notes
-Once merged, your contribution and GitHub profile will be automatically added to the next Release once published!

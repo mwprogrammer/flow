@@ -1,0 +1,13 @@
+linters:
+  enable:
+    - errcheck    # Checks for unhandled errors
+    - gosimple    # Suggests code simplifications
+    - govet       # Reports suspicious constructs (like Printf calls)
+    - staticcheck # Advanced static analysis
+    - unused      # Checks for unused constants, variables, types and functions
+    - revive      # Highly configurable linter (replaces golint)
+
+issues:
+  exclude-use-default: false
+  max-issues-per-linter: 0
+  max-same-issues: 0

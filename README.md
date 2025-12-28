@@ -8,8 +8,25 @@
 
 A library for building interactive apps to engage with customers over the whatsapp business platform. Built ontop of the WhatsApp Cloud API provided by Meta technologies. [Learn more about it here](https://developers.facebook.com/documentation/business-messaging/whatsapp/overview).
 
-## Project status
-🛠️ Under construction
+## 🗺️ Project Roadmap
+
+We are currently **🛠️ Under construction**. Our focus is on stabilizing core features, ensuring code quality through automated auditing, and gathering community feedback.
+
+### 📍 Current Phase: Foundation & CI/CD
+- [x] Complete project structure plus basic methods (read message, mark message as read, add text, etc)
+- [x] Standardize contribution process and implement basic CI/CD.
+- [x] Automated Go Linting (Static Analysis)
+- [ ] Add other methods for first release (In Progress)
+- [ ] Add demo project utilizing library (In Progress)
+
+### 🔜 Upcoming Milestones
+- **Beta-release-1.0.0: Release library for feedback and gather contributors**
+  - Publish beta on go packages.
+  - Publish tutorial.
+  - Accept contributions.
+
+---
+*Note: This roadmap is a living document and will be updated based on community feedback and project evolution.*
 
 ## Installation
 ```
