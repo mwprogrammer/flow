@@ -1,4 +1,11 @@
-# flow
+# 🌊 Flow
+
+[![Beta Release](https://img.shields.io/github/v/release/mwprogrammer/flow?include_prereleases&label=Beta&color=orange)](https://github.com/mwprogrammer/flow/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/mwprogrammer/flow/blob/develop/CONTRIBUTING.md)
+
+---
+
 A library for building interactive apps to engage with customers over the whatsapp business platform. Built ontop of the WhatsApp Cloud API provided by Meta technologies. [Learn more about it here](https://developers.facebook.com/documentation/business-messaging/whatsapp/overview).
 
 ## Project status
