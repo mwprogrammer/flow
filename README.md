@@ -30,7 +30,7 @@ We are currently **🛠️ Under construction**. Our focus is on stabilizing cor
 
 ## Installation (Pre-release)
 ```bash
-go get github.com/mwprogrammer/flow@v1.0.0-beta-0.1.1
+go get github.com/mwprogrammer/flow
 ```
 
 ## Documentation
