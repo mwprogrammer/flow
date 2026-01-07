@@ -1,3 +1,8 @@
+/*
+Package http provides HTTP-related utility functions for the Flow library.
+
+Author: Chisomo Chiweza (mwprogrammer)
+*/
 package http
 
 import (
@@ -9,22 +14,24 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/mwprogrammer/flow/internal/utilities"
+	"github.com/mwprogrammer/flow/internal/utilities/types"
 )
 
-type HttpResponse[T any] struct {
-	Url          string
+// Response provides information about an HTTP request and response
+type Response[T any] struct {
+	URL          string
 	Request      string
 	Response     *string
 	ResponseCode *int
 	Data         *T
 }
 
-func Get[T any](url string) (HttpResponse[T], error) {
+// Get sends an HTTP GET Request
+func Get[T any](url string) (Response[T], error) {
 
-	response := HttpResponse[T]{}
+	response := Response[T]{}
 
-	response.Url = url
+	response.URL = url
 	response.Request = url
 
 	content, err := http.Get(url)
@@ -45,18 +52,23 @@ func Get[T any](url string) (HttpResponse[T], error) {
 
 	response.Response = &data
 
-	defer content.Body.Close()
+	defer func() {
+		closeErr := content.Body.Close()
+		if err == nil {
+			err = closeErr
+		}
+	}()
 
 	if content.StatusCode != http.StatusCreated && content.StatusCode != http.StatusOK {
 
-		error_bytes, _ := io.ReadAll(content.Body)
-		return response, fmt.Errorf("received unexpected status code %d. Response: %s", content.StatusCode, error_bytes)
+		errorBytes, _ := io.ReadAll(content.Body)
+		return response, fmt.Errorf("received unexpected status code %d. Response: %s", content.StatusCode, errorBytes)
 
 	}
 
 	var result T
 
-	if utilities.IsTypeString(result) {
+	if types.IsString(result) {
 		return response, nil
 	}
 
@@ -72,11 +84,12 @@ func Get[T any](url string) (HttpResponse[T], error) {
 
 }
 
-func Post[T any, K any](url string, data T, headers map[string]string, timeout int) (HttpResponse[K], error) {
+// Post sends an HTTP POST request
+func Post[T any, K any](url string, data T, headers map[string]string, timeout int) (Response[K], error) {
 
-	response := HttpResponse[K]{}
+	response := Response[K]{}
 
-	response.Url = url
+	response.URL = url
 	response.Request = url
 
 	body, err := json.Marshal(data)
@@ -119,23 +132,28 @@ func Post[T any, K any](url string, data T, headers map[string]string, timeout i
 		return response, fmt.Errorf("failed to read response body: %w", err)
 	}
 
-	content_body := string(bytes)
+	contentBody := string(bytes)
 
-	response.Response = &content_body
+	response.Response = &contentBody
 
-	defer content.Body.Close()
+	defer func() {
+		closeErr := content.Body.Close()
+		if err == nil {
+			err = closeErr
+		}
+	}()
 
 	if content.StatusCode != http.StatusCreated && content.StatusCode != http.StatusOK {
 
-		error_bytes, _ := io.ReadAll(content.Body)
+		errorBytes, _ := io.ReadAll(content.Body)
 
-		return response, fmt.Errorf("received unexpected status code %d. Response: %s", content.StatusCode, string(error_bytes))
+		return response, fmt.Errorf("received unexpected status code %d. Response: %s", content.StatusCode, string(errorBytes))
 
 	}
 
 	var result K
 
-	if utilities.IsTypeString(result) {
+	if types.IsString(result) {
 		return response, nil
 	}
 
