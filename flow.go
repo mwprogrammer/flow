@@ -1,3 +1,11 @@
+/*
+Package flow provides a library for building interactive applications on the WhatsApp Business platform.
+
+It offers a high-level wrapper over the WhatsApp Cloud API, abstracting tasks such as
+marking messages as read, displaying typing indicators, sending text messages and more.
+
+Author: Chisomo Chiweza (mwprogrammer)
+*/
 package flow
 
 import (
@@ -6,33 +14,49 @@ import (
 	"fmt"
 
 	"github.com/mwprogrammer/flow/internal/client"
-	payloads "github.com/mwprogrammer/flow/internal/payloads"
 )
 
-type FlowSettings struct {
-	Id      string
+// Flow provides access to methods which allow you to
+// build interactive apps over the WhatsApp Business platform.
+type Flow struct {
+	settings Settings
+}
+
+// Settings Represents configuration like your WhatsApp Business ID, Cloud API Version,
+// Access Token and Sender Phone Number to allow you to send messages.
+type Settings struct {
+	ID      string
 	Version string
 	Token   string
 	Sender  string
 }
 
-func New(settings FlowSettings) *Flow {
+// Message represents the key information of a receipient message sent to your app over WhatsApp.
+type Message struct {
+	ID          string
+	PhoneNumber string
+	Name        string
+	Type        string
+	Content     string
+}
 
+// New constructs a new Flow object.
+func New(settings Settings) *Flow {
+
+	//TODO: Validate the configured settings somewhere here.
 	return &Flow{
 		settings: settings,
 	}
 
 }
 
-type Flow struct {
-	settings FlowSettings
-}
-
-func (f *Flow) ParseMessage(response string) (*Message, error) {
+// ParseMessage reads the JSON payload Meta sends as an event once someone sends a message to your
+// app on WhatsApp and parses it to return a FlowMessage.
+func (f *Flow) ParseMessage(payload string) (*Message, error) {
 
 	var message Message
 
-	data, err := client.ReadMessage(response)
+	data, err := client.ReadMessage(payload)
 
 	debug, _ := json.Marshal(data)
 
@@ -58,15 +82,15 @@ func (f *Flow) ParseMessage(response string) (*Message, error) {
 		return nil, errors.New("contacts property not defined")
 	}
 
-	contacts_data, err := json.Marshal(contacts)
+	contactsData, err := json.Marshal(contacts)
 
 	if err != nil {
 		return nil, errors.New("could not retrieve contacts property data")
 	}
 
-	var receipients []payloads.Receipient
+	var receipients []client.Recipient
 
-	err = json.Unmarshal(contacts_data, &receipients)
+	err = json.Unmarshal(contactsData, &receipients)
 
 	if err != nil {
 		return nil, errors.New("could not retrieve contacts property data")
@@ -80,42 +104,42 @@ func (f *Flow) ParseMessage(response string) (*Message, error) {
 		return nil, errors.New("messages property not defined")
 	}
 
-	messages_data, err := json.Marshal(messages)
+	messagesData, err := json.Marshal(messages)
 
 	if err != nil {
 		return nil, errors.New("could not retrieve messages property data")
 	}
 
-	var receipient_messages []payloads.ReceipientMessage
+	var receipientsMessages []client.RecipientMessage
 
-	err = json.Unmarshal(messages_data, &receipient_messages)
+	err = json.Unmarshal(messagesData, &receipientsMessages)
 
 	if err != nil {
 		return nil, errors.New("could not retrieve messages property data")
 	}
 
-	if len(receipient_messages) == 0 {
+	if len(receipientsMessages) == 0 {
 		return nil, errors.New("messages array is empty")
 	}
 
-	message.Id = receipient_messages[0].Id
-	message.PhoneNumber = receipient_messages[0].From
-	message.Type = receipient_messages[0].Type
+	message.ID = receipientsMessages[0].ID
+	message.PhoneNumber = receipientsMessages[0].From
+	message.Type = receipientsMessages[0].Type
 
-	if receipient_messages[0].Type == "text" {
+	if receipientsMessages[0].Type == "text" {
 
-		var text_messages []payloads.TextReceipientMessage
+		var textMessages []client.TextRecipientMessage
 
-		err = json.Unmarshal(messages_data, &text_messages)
+		err = json.Unmarshal(messagesData, &textMessages)
 
-		fmt.Println(string(messages_data))
+		fmt.Println(string(messagesData))
 
 		if err != nil {
 			fmt.Println(err.Error())
 			return nil, errors.New("could not retrieve messages property text data")
 		}
 
-		message.Content = text_messages[0].Text.Body
+		message.Content = textMessages[0].Text.Body
 
 	}
 
@@ -123,15 +147,16 @@ func (f *Flow) ParseMessage(response string) (*Message, error) {
 
 }
 
-func (f *Flow) MarkAsRead(phone string, message_id string) error {
+// MarkAsRead marks a message a receipient has sent to your app as read (ie the blueticks).
+func (f *Flow) MarkAsRead(phone string, messageID string) error {
 
-	payload := payloads.MarkAsReadPayload{}
+	payload := client.MarkAsReadPayload{}
 
 	payload.Product = "whatsapp"
-	payload.ReceipientType = "individual"
+	payload.RecipientType = "individual"
 	payload.To = phone
 	payload.Type = "text"
-	payload.MessageId = message_id
+	payload.MessageID = messageID
 	payload.Status = "read"
 
 	err := client.PostMessage(
@@ -148,17 +173,18 @@ func (f *Flow) MarkAsRead(phone string, message_id string) error {
 
 }
 
-func (f *Flow) DisplayTypingIndicator(phone string, message_id string) error {
+// DisplayTypingIndicator renders the "..." icon to the receipient to simulate your app processing a response.
+func (f *Flow) DisplayTypingIndicator(phone string, messageID string) error {
 
-	payload := payloads.DisplayTypingPayload{}
+	payload := client.DisplayTypingPayload{}
 
 	payload.Product = "whatsapp"
-	payload.ReceipientType = "individual"
+	payload.RecipientType = "individual"
 	payload.To = phone
 	payload.Type = "text"
-	payload.MessageId = message_id
+	payload.MessageID = messageID
 	payload.Status = "read"
-	payload.Indicator = payloads.TypingIndicator{}
+	payload.Indicator = client.TypingIndicator{}
 	payload.Indicator.Type = "text"
 
 	err := client.PostMessage(
@@ -175,16 +201,19 @@ func (f *Flow) DisplayTypingIndicator(phone string, message_id string) error {
 
 }
 
-func (f *Flow) ReplyWithText(phone string, message string, previewUrl bool) error {
+// ReplyWithText Allows your app to reply with simple text to a receipient.
+// If text is a link, setting previewUrl to true allows the final message sent
+// to display a preview of the link.
+func (f *Flow) ReplyWithText(phone string, message string, previewURL bool) error {
 
-	payload := payloads.ReplyWithTextPayload{}
+	payload := client.ReplyWithTextPayload{}
 
 	payload.Product = "whatsapp"
-	payload.ReceipientType = "individual"
+	payload.RecipientType = "individual"
 	payload.To = phone
 	payload.Type = "text"
-	payload.TextMessage = &payloads.TextMessage{}
-	payload.TextMessage.PreviewUrl = previewUrl
+	payload.TextMessage = &client.TextMessage{}
+	payload.TextMessage.PreviewURL = previewURL
 	payload.TextMessage.Body = message
 
 	err := client.PostMessage(

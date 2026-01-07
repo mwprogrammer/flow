@@ -1,3 +1,8 @@
+/*
+Package client connects and interacts with the WhatsApp Cloud API.
+
+Author: Chisomo Chiweza (mwprogrammer)
+*/
 package client
 
 import (
@@ -5,33 +10,33 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/mwprogrammer/flow/internal/payloads"
 	"github.com/mwprogrammer/flow/internal/utilities/http"
 )
 
-func ReadMessage(body string) (map[string]any, error) {
+// ReadMessage reads and validates a JSON payload from Meta
+func ReadMessage(payload string) (map[string]any, error) {
 
-	var payload payloads.BaseResponse
+	var response BaseResponse
 
-	err := json.Unmarshal([]byte(body), &payload)
+	err := json.Unmarshal([]byte(payload), &response)
 
 	if err != nil {
 		return nil, errors.New("the response body is not valid")
 	}
 
-	if payload.Object == "" {
+	if response.Object == "" {
 		return nil, errors.New("object property is not defined")
 	}
 
-	if payload.Object != "whatsapp_business_account" {
+	if response.Object != "whatsapp_business_account" {
 		return nil, errors.New("object property is not whatsapp_business_account")
 	}
 
-	if len(payload.Entries) == 0 {
+	if len(response.Entries) == 0 {
 		return nil, errors.New("entries property has empty array")
 	}
 
-	data_string, err := json.Marshal(payload.Entries[0].Changes[0].Value)
+	dataString, err := json.Marshal(response.Entries[0].Changes[0].Value)
 
 	if err != nil {
 		return nil, errors.New("value sub property could not be parsed")
@@ -39,7 +44,7 @@ func ReadMessage(body string) (map[string]any, error) {
 
 	var data map[string]any
 
-	err = json.Unmarshal([]byte(data_string), &data)
+	err = json.Unmarshal([]byte(dataString), &data)
 
 	if err != nil {
 		return nil, errors.New("value sub property is not valid")
@@ -49,6 +54,7 @@ func ReadMessage(body string) (map[string]any, error) {
 
 }
 
+// PostMessage sends a request to WhatsApp Cloud API
 func PostMessage(version string, token string, sender string, payload any, endpoint string) error {
 
 	headers := map[string]string{}
@@ -58,8 +64,8 @@ func PostMessage(version string, token string, sender string, payload any, endpo
 	headers["Accept"] = "application"
 	headers["Authorization"] = fmt.Sprintf("Bearer %s", token)
 
-	base_url := fmt.Sprintf("https://graph.facebook.com/v%s/%s", version, sender)
-	url := fmt.Sprintf("%s/%s", base_url, endpoint)
+	baseURL := fmt.Sprintf("https://graph.facebook.com/v%s/%s", version, sender)
+	url := fmt.Sprintf("%s/%s", baseURL, endpoint)
 
 	_, err := http.Post[any, any](url, payload, headers, 30)
 
