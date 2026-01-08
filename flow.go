@@ -22,7 +22,7 @@ type Flow struct {
 	settings Settings
 }
 
-// Settings Represents configuration like your WhatsApp Business ID, Cloud API Version,
+// Settings represents configuration like your WhatsApp Business ID, Cloud API Version,
 // Access Token and Sender Phone Number to allow you to send messages.
 type Settings struct {
 	ID      string
@@ -31,7 +31,14 @@ type Settings struct {
 	Sender  string
 }
 
-// Message represents the key information of a receipient message sent to your app over WhatsApp.
+// Event represents the key information contained within a JSON payload sent by Meta as an event.
+type Event struct {
+	Type    string
+	Payload string
+	Message *Message
+}
+
+// Message contains the details of a message sent by a receipient to your app.
 type Message struct {
 	ID          string
 	PhoneNumber string
@@ -50,10 +57,11 @@ func New(settings Settings) *Flow {
 
 }
 
-// ParseMessage reads the JSON payload Meta sends as an event once someone sends a message to your
-// app on WhatsApp and parses it to return a FlowMessage.
-func (f *Flow) ParseMessage(payload string) (*Message, error) {
+// ParseEvent reads the JSON payload Meta sends to your app based on events that
+// occur as users interact with your app and parses it to return an Event.
+func (f *Flow) ParseEvent(payload string) (*Event, error) {
 
+	var event Event
 	var message Message
 
 	data, err := client.ReadMessage(payload)
@@ -69,23 +77,31 @@ func (f *Flow) ParseMessage(payload string) (*Message, error) {
 	product, ok := data["messaging_product"]
 
 	if !ok {
-		return nil, errors.New("product property not defined")
+		return nil, errors.New("incorrect format: product property not defined in payload")
 	}
 
 	if product != "whatsapp" {
-		return nil, errors.New("product is not whatsapp")
+		return nil, errors.New("incorrect format: product is not whatsapp")
 	}
+
+	event = Event{}
+	event.Payload = string(debug)
 
 	contacts, ok := data["contacts"]
 
 	if !ok {
-		return nil, errors.New("contacts property not defined")
+		//TODO: Add other data if not message event
+
+		event.Type = "Notification Event"
+		event.Message = nil
+
+		return nil, nil
 	}
 
 	contactsData, err := json.Marshal(contacts)
 
 	if err != nil {
-		return nil, errors.New("could not retrieve contacts property data")
+		return nil, errors.New("incorrect format : could not retrieve contacts property data")
 	}
 
 	var receipients []client.Recipient
@@ -93,7 +109,7 @@ func (f *Flow) ParseMessage(payload string) (*Message, error) {
 	err = json.Unmarshal(contactsData, &receipients)
 
 	if err != nil {
-		return nil, errors.New("could not retrieve contacts property data")
+		return nil, errors.New("incorrect format : could not retrieve contacts property data")
 	}
 
 	message.Name = receipients[0].Profile.Name
@@ -101,13 +117,13 @@ func (f *Flow) ParseMessage(payload string) (*Message, error) {
 	messages, ok := data["messages"]
 
 	if !ok {
-		return nil, errors.New("messages property not defined")
+		return nil, errors.New("incorrect format : messages property not defined")
 	}
 
 	messagesData, err := json.Marshal(messages)
 
 	if err != nil {
-		return nil, errors.New("could not retrieve messages property data")
+		return nil, errors.New("incorrect format : could not retrieve messages property data")
 	}
 
 	var receipientsMessages []client.RecipientMessage
@@ -115,11 +131,11 @@ func (f *Flow) ParseMessage(payload string) (*Message, error) {
 	err = json.Unmarshal(messagesData, &receipientsMessages)
 
 	if err != nil {
-		return nil, errors.New("could not retrieve messages property data")
+		return nil, errors.New("incorrect format : could not retrieve messages property data")
 	}
 
 	if len(receipientsMessages) == 0 {
-		return nil, errors.New("messages array is empty")
+		return nil, errors.New("incorrect format : messages array is empty")
 	}
 
 	message.ID = receipientsMessages[0].ID
@@ -136,14 +152,17 @@ func (f *Flow) ParseMessage(payload string) (*Message, error) {
 
 		if err != nil {
 			fmt.Println(err.Error())
-			return nil, errors.New("could not retrieve messages property text data")
+			return nil, errors.New("incorrect format : could not retrieve messages property text data")
 		}
 
 		message.Content = textMessages[0].Text.Body
 
 	}
 
-	return &message, nil
+	event.Type = "Message Event"
+	event.Message = &message
+
+	return &event, nil
 
 }
 

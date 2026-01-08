@@ -59,13 +59,6 @@ func Get[T any](url string) (Response[T], error) {
 		}
 	}()
 
-	if content.StatusCode != http.StatusCreated && content.StatusCode != http.StatusOK {
-
-		errorBytes, _ := io.ReadAll(content.Body)
-		return response, fmt.Errorf("received unexpected status code %d. Response: %s", content.StatusCode, errorBytes)
-
-	}
-
 	var result T
 
 	if types.IsString(result) {
@@ -142,14 +135,6 @@ func Post[T any, K any](url string, data T, headers map[string]string, timeout i
 			err = closeErr
 		}
 	}()
-
-	if content.StatusCode != http.StatusCreated && content.StatusCode != http.StatusOK {
-
-		errorBytes, _ := io.ReadAll(content.Body)
-
-		return response, fmt.Errorf("received unexpected status code %d. Response: %s", content.StatusCode, string(errorBytes))
-
-	}
 
 	var result K
 

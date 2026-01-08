@@ -33,8 +33,19 @@ func TestReadingMessage(t *testing.T) {
 }
 
 func TestPostingMessage(t *testing.T) {
-	
+
 	configure()
+
+	payload := client.DisplayTypingPayload{}
+
+	payload.Product = "whatsapp"
+	payload.RecipientType = "individual"
+	payload.To = "16315551181"
+	payload.Type = "text"
+	payload.MessageID = "ABGGFlA5Fpa"
+	payload.Status = "read"
+	payload.Indicator = client.TypingIndicator{}
+	payload.Indicator.Type = "text"
 
 	err := client.PostMessage(version, token, senderPhoneNumber, "", "messages")
 

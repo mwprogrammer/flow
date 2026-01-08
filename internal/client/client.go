@@ -67,7 +67,10 @@ func PostMessage(version string, token string, sender string, payload any, endpo
 	baseURL := fmt.Sprintf("https://graph.facebook.com/v%s/%s", version, sender)
 	url := fmt.Sprintf("%s/%s", baseURL, endpoint)
 
-	_, err := http.Post[any, any](url, payload, headers, 30)
+	data, err := http.Post[any, any](url, payload, headers, 30)
+
+	fmt.Println(data.ResponseCode)
+	fmt.Println(data.Response)
 
 	if err != nil {
 		return err
